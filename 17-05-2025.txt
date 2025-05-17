@@ -1,0 +1,60 @@
+CREATE DATABASE UWU;
+USE UWU;
+
+create view emp_details 
+as select empname, deptid from employee;
+desc employee;
+select * from employee;
+CREATE TABLE Employee (
+    empid INT PRIMARY KEY,
+    empname VARCHAR(100),
+    salary DECIMAL(10, 2),
+    deptid INT,
+    managerid INT
+);
+Alter table employee ADD desciption varchar(30);
+Alter table employee DROP column desciption;
+UPDATE Employee
+SET empname = 'ADI'
+WHERE empname = 'Alice Johnson';
+
+INSERT INTO Employee (empid, empname, salary, deptid, managerid)
+VALUES 
+(1, 'Alice Johnson', 75000.00, 1, 101),
+(2, 'Bob Smith', 85000.00, 2, 102),
+(3, 'Charlie Brown', 67000.00, 2, 101),
+(4, 'Diana Prince', 92000.00, 3, 103),
+(5, 'Eve Davis', 88000.00, 5, 104),
+(6, 'Frank White', 73000.00, 6, 102);
+
+
+-- manager table
+select * from manager;
+CREATE TABLE Manager (
+    managerid INT PRIMARY KEY,
+    managername VARCHAR(100),
+    deptid INT
+);
+INSERT INTO Manager (managerid, managername, deptid)
+VALUES 
+(101, 'George Williams', 1),
+(102, 'Hannah Brown', 2),
+(103, 'Isla Clark', 3),
+(104, 'Jack Wilson', 4),
+(105, 'Karen Taylor', 1);
+
+-- Projects table
+CREATE TABLE Projects (
+    projectid INT PRIMARY KEY,
+    projectname VARCHAR(100),
+    teammemberid INT
+);
+INSERT INTO Projects (projectid, projectname, teammemberid)
+VALUES 
+(1, 'Project Alpha', 1),
+(2, 'Project Beta', 2),
+(3, 'Project Gamma', 3),
+(4, 'Project Delta', 4),
+(5, 'Project Epsilon', 5),
+(6, 'Project Zeta', 6);
+select * from projects;
