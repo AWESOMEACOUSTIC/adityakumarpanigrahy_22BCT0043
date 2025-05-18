@@ -1,0 +1,75 @@
+DROP DATABASE IF EXISTS real_time_clone_db;
+CREATE DATABASE real_time_clone_db;
+USE real_time_clone_db;
+
+CREATE TABLE products (
+  product_id   INT            PRIMARY KEY AUTO_INCREMENT,
+  name         VARCHAR(100)   NOT NULL,
+  price        DECIMAL(10,2)  NOT NULL,
+  in_stock     BOOLEAN        NOT NULL
+);
+
+INSERT INTO products (name, price, in_stock) VALUES
+  ('Widget',      19.99, TRUE),
+  ('Gadget',      29.99, FALSE),
+  ('Doohickey',    9.49, TRUE),
+  ('Thingamajig', 14.75, TRUE),
+  ('Contraption', 99.95, FALSE),
+  ('Gizmo',       49.50, TRUE),
+  ('Apparatus',    5.99, TRUE),
+  ('Mechanism',  120.00, FALSE),
+  ('Device',      75.25, TRUE),
+  ('Instrument',  39.40, FALSE);
+
+UPDATE products
+SET price = price + 5.00
+WHERE product_id = 2;
+
+ALTER TABLE products
+ADD COLUMN last_updated TIMESTAMP
+  DEFAULT CURRENT_TIMESTAMP
+  ON UPDATE CURRENT_TIMESTAMP;
+
+CREATE TABLE customers (
+  customer_id  INT            PRIMARY KEY AUTO_INCREMENT,
+  email        VARCHAR(255)   NOT NULL,
+  signup_date  DATE           NOT NULL,
+  metadata     JSON           NULL
+);
+
+INSERT INTO customers (email, signup_date, metadata) VALUES
+  ('alice@example.com',    '2024-01-10', '{"loyalty_points":120,"referrer":"Google"}'),
+  ('bob@example.net',      '2024-02-20', '{"loyalty_points":85,"preferences":["email","sms"]}'),
+  ('carol@domain.com',     '2024-03-05', '{"loyalty_points":200}'),
+  ('dave@mail.com',        '2024-04-22', '{"loyalty_points":50,"vip":false}'),
+  ('eve@security.org',     '2024-05-11', '{"loyalty_points":300,"vip":true}'),
+  ('frank@company.com',    '2024-06-18', '{"loyalty_points":75}'),
+  ('grace@site.net',       '2024-07-30', '{"loyalty_points":150,"notes":"frequent buyer"}'),
+  ('heidi@internet.com',   '2024-08-09', '{"loyalty_points":95}'),
+  ('ivan@network.org',     '2024-09-16', '{"loyalty_points":110}'),
+  ('judy@services.com',    '2024-10-24', '{"loyalty_points":60}');
+
+CREATE TABLE orders (
+  order_id      CHAR(8)       PRIMARY KEY,
+  customer_id   INT           NOT NULL,
+  order_date    DATETIME      NOT NULL,
+  total_amount  FLOAT         NOT NULL,
+  FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+INSERT INTO orders (order_id, customer_id, order_date, total_amount) VALUES
+  ('ORD00001', 1, '2024-02-14 10:15:00',  59.97),
+  ('ORD00002', 2, '2024-03-01 11:30:00',  29.99),
+  ('ORD00003', 1, '2024-03-12 15:45:00', 120.00),
+  ('ORD00004', 3, '2024-04-05 09:00:00',   9.49),
+  ('ORD00005', 5, '2024-05-20 18:10:00',  99.95),
+  ('ORD00006', 6, '2024-06-22 12:00:00',  49.50),
+  ('ORD00007', 7, '2024-07-25 14:25:00',   5.99),
+  ('ORD00008', 8, '2024-08-30 16:40:00', 120.00),
+  ('ORD00009', 9, '2024-09-12 19:55:00',  75.25),
+  ('ORD00010',10, '2024-10-15 08:20:00',  39.40);
+  
+  DROP TABLE orders;
+  
+  DROP DATABASE real_time_clone_db;
+
