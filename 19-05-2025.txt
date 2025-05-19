@@ -1,0 +1,96 @@
+CREATE DATABASE IF NOT EXISTS UniversityDB;
+USE UniversityDB;
+
+
+CREATE TABLE IF NOT EXISTS students (
+  student_id       INT            NOT NULL AUTO_INCREMENT,
+  full_name        VARCHAR(100)   NOT NULL,
+  email            VARCHAR(100)   NOT NULL UNIQUE,
+  major            VARCHAR(50)    NOT NULL,
+  enrollment_date  DATE           NOT NULL,
+  PRIMARY KEY (student_id)
+);
+
+INSERT INTO students (full_name, email, major, enrollment_date) VALUES
+  ('Aarav Sharma',      'aarav.sharma@uni.edu',    'Computer Science', '2022-08-15'),
+  ('Priya Patel',       'priya.patel@uni.edu',     'Mechanical Eng.',  '2021-09-01'),
+  ('Rohan Verma',       'rohan.verma@uni.edu',     'Business Admin.',  '2023-01-10'),
+  ('Sanya Singh',       'sanya.singh@uni.edu',     'Biochemistry',     '2020-07-20'),
+  ('Neha Kulkarni',     'neha.kulkarni@uni.edu',   'Psychology',       '2022-01-05'),
+  ('Vikram Rao',        'vikram.rao@uni.edu',      'Electrical Eng.',  '2021-08-23'),
+  ('Isha Mehta',        'isha.mehta@uni.edu',      'Economics',        '2023-02-14'),
+  ('Kunal Desai',       'kunal.desai@uni.edu',     'Civil Eng.',       '2020-11-30'),
+  ('Ananya Iyer',       'ananya.iyer@uni.edu',     'Mathematics',      '2022-09-12'),
+  ('Tarun Gupta',       'tarun.gupta@uni.edu',     'Environmental Sci.','2021-03-18');
+  
+  ALTER TABLE STUDENTS DROP COLUMN EMAIL; -- DROP PERMANENTLY DELETES THE DB, TABLE, COLUMN WHICH CANNOT BE RESTORED IN FUTURE
+  SELECT * FROM STUDENTS;
+  SELECT FULL_NAME AS NAME FROM STUDENTS;
+  DELETE FROM STUDENTS WHERE MAJOR = 'CIVIL ENG.';
+  
+  START TRANSACTION;
+  
+  UPDATE students
+   SET major = 'Data Science'
+ WHERE student_id = 1;
+ SAVEPOINT sp1;
+ 
+ DELETE FROM students
+ WHERE student_id = 2;
+SAVEPOINT sp2;
+
+INSERT INTO students (full_name, email, major, enrollment_date)
+VALUES ('Zara Khan', 'zara.khan@uni.edu', 'Philosophy', '2024-06-10');
+SAVEPOINT sp3;
+
+--  Oops — decide to undo everything from step 2 onward,
+--  but keep the very first update. Roll back to sp1:
+
+ROLLBACK TO SAVEPOINT sp1;
+
+COMMIT;
+SELECT * FROM students;
+
+-- vit database
+ 
+ CREATE DATABASE VIT;
+  use vit;
+  
+  CREATE TABLE Worker (
+	WORKER_ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	FIRST_NAME CHAR(25),
+	LAST_NAME CHAR(25),
+	SALARY INT(15),
+	JOINING_DATE DATETIME,
+	DEPARTMENT CHAR(25)
+);
+
+INSERT INTO Worker 
+	(WORKER_ID, FIRST_NAME, LAST_NAME, SALARY, JOINING_DATE, DEPARTMENT) VALUES
+		(001, 'Monika', 'Arora', 100000, '14-02-20 09.00.00', 'HR'),
+		(002, 'Niharika', 'Verma', 80000, '14-06-11 09.00.00', 'Admin'),
+		(003, 'Vishal', 'Singhal', 300000, '14-02-20 09.00.00', 'HR'),
+		(004, 'Amitabh', 'Singh', 500000, '14-02-20 09.00.00', 'Admin'),
+		(005, 'Vivek', 'Bhati', 500000, '14-06-11 09.00.00', 'Admin'),
+		(006, 'Vipul', 'Diwan', 200000, '14-06-11 09.00.00', 'Account'),
+		(007, 'Satish', 'Kumar', 75000, '14-01-20 09.00.00', 'Account');
+  
+  SELECT * FROM WORKER;
+  SELECT FIRST_NAME AS EMPLOYEE FROM WORKER;
+  SELECT FIRST_NAME, SALARY, DEPARTMENT FROM WORKER WHERE DEPARTMENT = 'HR';
+  SELECT FIRST_NAME, LAST_NAME FROM WORKER WHERE SALARY > 100000;
+  SELECT first_name,department FROM Worker WHERE SALARY > 200000 AND DEPARTMENt ='HR';
+SELECT * FROM Worker WHERE SALARY < 200000 AND (DEPARTMENT ='HR' OR DEPARTMENT = 'Admin');
+SELECT * FROM WORKER WHERE (SALARY > 100000 AND SALARY < 500000) AND (DEPARTMENT = 'ACCOUNT' OR DEPARTMENT = 'ADMIN');
+SELECT * FROM WORKER WHERE (SALARY > 100000 AND SALARY < 500000) AND DEPARTMENT IN ('ACCOUNT', 'HR', 'ADMIN');
+SELECT 
+  MAX(SALARY) AS max_salary
+FROM WORKER
+WHERE DEPARTMENT IN ('HR','ADMIN')
+  AND WORKER_ID % 2 = 0;
+  SET SQL_SAFE_UPDATES = 0;
+   DELETE FROM WORKER WHERE SALARY < 200000;
+   
+   TRUNCATE TABLE WORKER;
+   DESC WORKER;
+  
