@@ -1,0 +1,83 @@
+CREATE DATABASE IF NOT EXISTS BOOKINGS;
+USE BOOKINGS;
+
+CREATE TABLE movies (
+    movie_id      INT PRIMARY KEY AUTO_INCREMENT,
+    title         VARCHAR(150) NOT NULL,
+    release_year  YEAR,
+    director      VARCHAR(100)
+);
+
+INSERT INTO movies (title, release_year, director) VALUES
+  ('The Shawshank Redemption', 1994,  'Frank Darabont'),
+  ('The Godfather',            1972,  'Francis Ford Coppola'),
+  ('Inception',                2010,  'Christopher Nolan'),
+  ('Parasite',                 2019,  'Bong Joon-ho'),
+  ('Everything Everywhere All at Once', 2022, 'Daniel Kwan & Daniel Scheinert');
+  
+  select * from movies;
+
+CREATE TABLE reviews (
+    review_id   INT PRIMARY KEY AUTO_INCREMENT,
+    movie_id    INT,               -- foreign-key column
+    rating      TINYINT CHECK (rating BETWEEN 1 AND 10),
+    comment     TEXT,
+
+    CONSTRAINT fk_reviews_movie         
+        FOREIGN KEY (movie_id)
+        REFERENCES movies(movie_id)
+        ON DELETE CASCADE               
+);
+
+INSERT INTO reviews (movie_id, rating, comment)
+VALUES (2, 9, 'Timeless classic!');
+
+DELETE FROM movies WHERE movie_id = 1;
+
+ALTER TABLE REVIEWS
+DROP reviews_ibfk_1,
+ADD CONSTRAINT fk_reviews_movie
+FOREIGN KEY (movie_id)
+REFERENCES movies(movie_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE;
+
+
+CREATE TABLE team (
+    id          INT AUTO_INCREMENT,
+    name        VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE f1_car (
+    id          INT,              -- will become PK
+    team_id     INT,              -- will reference team(id)
+    model       VARCHAR(50),      -- will become UNIQUE
+    top_speed   INT               -- will get CHECK & DEFAULT
+);
+
+ALTER TABLE f1_car
+    MODIFY top_speed INT NOT NULL DEFAULT 300;
+
+ALTER TABLE f1_car
+    ADD CONSTRAINT pk_f1car PRIMARY KEY (id);
+    
+ALTER TABLE f1_car
+    ADD CONSTRAINT uq_f1car_model UNIQUE (model);
+    
+ALTER TABLE f1_car
+    ADD CONSTRAINT fk_f1car_team
+        FOREIGN KEY (team_id)
+        REFERENCES team(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL;
+        
+ALTER TABLE f1_car
+    DROP FOREIGN KEY fk_f1car_team;
+        
+ALTER TABLE f1_car
+    ADD CONSTRAINT chk_f1car_speed
+        CHECK (top_speed BETWEEN 50 AND 400);
+        
+ALTER TABLE f1_car
+    DROP CHECK chk_f1car_speed;
