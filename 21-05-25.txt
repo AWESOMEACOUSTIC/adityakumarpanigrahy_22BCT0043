@@ -1,0 +1,108 @@
+CREATE DATABASE VIT;
+  use vit;
+  
+  CREATE TABLE Worker (
+	WORKER_ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	FIRST_NAME CHAR(25),
+	LAST_NAME CHAR(25),
+	SALARY INT(15),
+	JOINING_DATE DATETIME,
+	DEPARTMENT CHAR(25)
+);
+
+INSERT INTO Worker 
+	(WORKER_ID, FIRST_NAME, LAST_NAME, SALARY, JOINING_DATE, DEPARTMENT) VALUES
+		(001, 'Monika', 'Arora', 100000, '14-02-20 09.00.00', 'HR'),
+		(002, 'Niharika', 'Verma', 80000, '14-06-11 09.00.00', 'Admin'),
+		(003, 'Vishal', 'Singhal', 300000, '14-02-20 09.00.00', 'HR'),
+		(004, 'Amitabh', 'Singh', 500000, '14-02-20 09.00.00', 'Admin'),
+		(005, 'Vivek', 'Bhati', 500000, '14-06-11 09.00.00', 'Admin'),
+		(006, 'Vipul', 'Diwan', 200000, '14-06-11 09.00.00', 'Account'),
+		(007, 'Satish', 'Kumar', 75000, '14-01-20 09.00.00', 'Account');
+        
+SELECT * FROM WORKER WHERE SALARY BETWEEN 100000 AND 200000;
+
+SELECT * FROM WORKER WHERE SALARY BETWEEN 100000 AND 200000 AND DEPARTMENT NOT IN('HR');
+
+SELECT
+    COUNT(*)                              AS total_workers,
+    COUNT(DISTINCT DEPARTMENT)            AS distinct_departments,
+    SUM(SALARY)                           AS total_salary,
+    AVG(SALARY)                           AS avg_salary,
+    MIN(SALARY)                           AS min_salary,
+    MAX(SALARY)                           AS max_salary,
+    STDDEV_SAMP(SALARY)                   AS stddev_salary,    -- sample std-dev
+    VAR_SAMP(SALARY)                      AS var_salary        -- sample variance
+FROM Worker;
+
+SELECT
+    DEPARTMENT,
+    COUNT(*)        AS num_workers,
+    SUM(SALARY)     AS dept_total,
+    AVG(SALARY)     AS dept_avg,
+    MIN(SALARY)     AS dept_min,
+    MAX(SALARY)     AS dept_max
+FROM Worker
+GROUP BY DEPARTMENT
+ORDER BY dept_total DESC;
+
+CREATE TABLE worker_1 LIKE Worker;
+INSERT INTO worker_1
+    (WORKER_ID, FIRST_NAME, LAST_NAME, SALARY, JOINING_DATE, DEPARTMENT)
+VALUES
+    (101, 'Aditya',   'Shetty',   120000, '21-03-15 09.00.00', 'Finance'),
+    (102, 'Sneha',    'Patil',    95000,  '22-07-01 09.00.00', 'Marketing'),
+    (103, 'Rahul',    'Desai',    275000, '23-01-12 09.00.00', 'Finance'),
+    (104, 'Kavita',   'Joshi',    420000, '22-10-20 09.00.00', 'Tech'),
+    (105, 'Gaurav',   'Mehra',    310000, '24-02-07 09.00.00', 'Tech'),
+    (106, 'Priya',    'Saxena',   180000, '23-05-18 09.00.00', 'Support'),
+    (107, 'Deepak',   'Nair',     85000,  '24-01-03 09.00.00', 'Support');
+    
+    /* All distinct rows from both tables */
+SELECT * FROM Worker
+UNION
+SELECT * FROM worker_1;
+
+SELECT department FROM Worker
+UNION ALL
+SELECT department FROM worker_1;
+
+SELECT First_name , Salary,
+CASE
+	WHEN Salary > 300000 then 'Rich People'
+    when Salary < 300000 && Salary <= 100000 then 'middle layer'
+    WHEN Salary < 100000 then 'poor people'
+    else 'NO DATA'
+end
+as status_check from worker ;
+
+SELECT
+    DEPARTMENT,
+    COUNT(*)          AS headcount,
+    AVG(SALARY)       AS avg_salary
+FROM   Worker
+GROUP BY DEPARTMENT
+HAVING AVG(SALARY) > 150000          
+ORDER BY avg_salary DESC;            
+
+SELECT
+    WORKER_ID,
+    FIRST_NAME,
+    LAST_NAME,
+    DEPARTMENT,
+    SALARY
+FROM   Worker
+ORDER  BY DEPARTMENT  ASC,    
+          SALARY      DESC;   
+
+CREATE OR REPLACE VIEW v_high_earning_workers AS
+SELECT
+    WORKER_ID,
+    FIRST_NAME,
+    LAST_NAME,
+    SALARY,
+    JOINING_DATE,
+    DEPARTMENT
+FROM Worker
+WHERE SALARY >= 250000;
+SELECT * FROM v_high_earning_workers;
