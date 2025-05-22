@@ -1,0 +1,91 @@
+SHOW TABLES;
+
+DESC WORKER;
+
+SELECT SUM(SALARY) AS org_total_payroll
+FROM   Worker
+HAVING SUM(SALARY) > 1500000;
+
+SELECT DEPARTMENT,
+       COUNT(*) AS headcount
+FROM   Worker
+GROUP  BY DEPARTMENT
+ORDER  BY DEPARTMENT ASC,    
+          headcount   DESC;   
+          
+SELECT DEPARTMENT,
+       AVG(SALARY) AS avg_salary
+FROM   Worker
+GROUP  BY DEPARTMENT
+HAVING AVG(SALARY) BETWEEN 100000 AND 300000
+ORDER  BY avg_salary DESC;
+
+SELECT
+    CASE 
+        WHEN SALARY >= 300000 THEN 'High'
+        WHEN SALARY >= 150000 THEN 'Medium'
+        ELSE                      'Low'
+    END               AS salary_band,
+    COUNT(*)           AS num_employees,
+    SUM(SALARY)        AS payroll_band
+FROM   Worker
+GROUP  BY salary_band
+HAVING SUM(SALARY) > 300000         
+ORDER  BY payroll_band DESC;
+
+SELECT *
+FROM   Worker
+WHERE  SALARY >
+       ( SELECT AVG(SALARY)     
+         FROM   Worker );
+         
+SELECT *
+FROM   Worker
+WHERE  DEPARTMENT IN (
+        SELECT DEPARTMENT
+        FROM   Worker
+        GROUP  BY DEPARTMENT
+        HAVING COUNT(*) > 1
+      );
+      
+create table student(
+s_id int,
+s_name varchar(25)
+);
+insert into student values (101,'jayanth'),(102,'karthik'),(103,'Praveen'),(105,'mahesh'),(106,'Arun');
+
+create table address(
+s_id int,
+s_address varchar(25));
+insert into address values (101,'coimbatore'),(104,'chennai'),(105,'pune');
+
+SELECT  s.s_id,
+        s.s_name,
+        a.s_address
+FROM    student  AS s
+JOIN    address  AS a
+       ON a.s_id = s.s_id;
+       
+SELECT  s.s_id,
+        s.s_name,
+        a.s_address
+FROM    student  AS s
+LEFT JOIN address AS a
+       ON a.s_id = s.s_id
+ORDER BY s.s_id;
+
+SELECT  s.s_id,
+        s.s_name,
+        a.s_address
+FROM    student  AS s
+RIGHT JOIN address AS a
+       ON a.s_id = s.s_id
+ORDER BY a.s_id;
+
+SELECT  s.s_id  AS student_id,
+        s.s_name,
+        a.s_id  AS address_sid,
+        a.s_address
+FROM    student  AS s
+CROSS JOIN address AS a
+ORDER BY s.s_id, a.s_id;
