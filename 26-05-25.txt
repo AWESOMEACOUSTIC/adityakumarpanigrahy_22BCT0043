@@ -1,0 +1,150 @@
+DB connection code:
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DB_connection {
+    public Connection get_connection() {
+        Connection connection = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/EXAMPLE?useSSL=false&serverTimezone=UTC",
+                    "root",
+                    "ass@BCT0043"
+            );
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Connection error: " + e.getMessage());
+        }
+        return connection;
+    }
+}
+
+
+CRUD Operation Code
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Scanner;
+
+public class CRUD_operation {
+
+    public static void main(String[] args) {
+        CRUD_operation objTest = new CRUD_operation();
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Enter the number of students to insert: ");
+        int n = sc.nextInt();
+
+        for (int i = 0; i < n; i++) {
+            System.out.print("Enter student sl no: ");
+            int sl_no = sc.nextInt();
+            sc.nextLine();
+
+            System.out.print("Enter the student's name: ");
+            String name = sc.nextLine();
+
+            objTest.create_data(sl_no, name);
+        }
+
+        while (true) {
+            System.out.println("\nChoose an option:");
+            System.out.println("1. View all students");
+            System.out.println("2. Update a student's name");
+            System.out.println("3. Delete a student");
+            System.out.println("4. Exit");
+            System.out.print("Your choice: ");
+            int choice = sc.nextInt();
+
+            switch (choice) {
+                case 1:
+                    objTest.read_data();
+                    break;
+                case 2:
+                    System.out.print("Enter the student's sl no to update: ");
+                    int sl_no_update = sc.nextInt();
+                    sc.nextLine();
+                    System.out.print("Enter the new name: ");
+                    String newName = sc.nextLine();
+                    objTest.update_data(sl_no_update, newName);
+                    break;
+                case 3:
+                    System.out.print("Enter the student's sl no to delete: ");
+                    int sl_no_delete = sc.nextInt();
+                    objTest.delete_data(sl_no_delete);
+                    break;
+                case 4:
+                    System.out.println("Exiting program.");
+                    sc.close();
+                    return;
+                default:
+                    System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+
+    public void create_data(int sl_no, String name) {
+        DB_connection db = new DB_connection();
+        try (Connection conn = db.get_connection();
+             PreparedStatement ps = conn.prepareStatement("INSERT INTO student (sl_no, name) VALUES (?, ?)")) {
+            ps.setInt(1, sl_no);
+            ps.setString(2, name);
+            ps.executeUpdate();
+            System.out.println("Inserted: " + sl_no + " - " + name);
+        } catch (Exception e) {
+            System.out.println("Error inserting data: " + e.getMessage());
+        }
+    }
+
+    public void read_data() {
+        DB_connection db = new DB_connection();
+        try (Connection conn = db.get_connection();
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM student");
+             ResultSet rs = ps.executeQuery()) {
+
+            System.out.println("\n--- Student Records ---");
+            System.out.printf("%-10s %-20s\n", "Sl No", "Name");
+            System.out.println("------------------------------");
+
+            while (rs.next()) {
+                System.out.printf("%-10d %-20s\n", rs.getInt("sl_no"), rs.getString("name"));
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading data: " + e.getMessage());
+        }
+    }
+
+    public void update_data(int sl_no, String new_name) {
+        DB_connection db = new DB_connection();
+        try (Connection conn = db.get_connection();
+             PreparedStatement ps = conn.prepareStatement("UPDATE student SET name = ? WHERE sl_no = ?")) {
+            ps.setString(1, new_name);
+            ps.setInt(2, sl_no);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Updated successfully.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error updating data: " + e.getMessage());
+        }
+    }
+
+    public void delete_data(int sl_no) {
+        DB_connection db = new DB_connection();
+        try (Connection conn = db.get_connection();
+             PreparedStatement ps = conn.prepareStatement("DELETE FROM student WHERE sl_no = ?")) {
+            ps.setInt(1, sl_no);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Deleted successfully.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error deleting data: " + e.getMessage());
+        }
+    }
+}
